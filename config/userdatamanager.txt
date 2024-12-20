@@ -1,0 +1,137 @@
+using System.IO;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
+using System;
+
+public class UserDataManager : MonoBehaviour
+{
+    [Header("UI References")]
+    public TMP_InputField usernameInput;
+    public TMP_InputField passwordInput;
+    public Button loginButton;
+    public Button createAccountButton;
+    public TMP_Text notifiText;
+
+    private string filePath;
+
+    void Start()
+    {
+        filePath = Path.Combine(Application.persistentDataPath, "UserData.json");
+
+        loginButton.onClick.AddListener(OnLogin);
+        createAccountButton.onClick.AddListener(OnCreateAccount);
+    }
+
+    public void OnCreateAccount()
+    {
+        string username = usernameInput.text.Trim();
+        string password = passwordInput.text.Trim();
+
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        {
+            notifiText.text = "Username and password cannot be empty!";
+            return;
+        }
+
+        UserData newUser = new UserData
+        {
+            UserNameDT = username,
+            PasswordDT = EncryptionHelper.Encrypt(password),
+            ExpDT = 0,
+            LevelDT = 0
+        };
+
+        List<UserData> users = LoadUserData();
+        if (users.Exists(user => user.UserNameDT == username))
+        {
+            notifiText.text = "Username already exists!";
+            return;
+        }
+
+        users.Add(newUser);
+        SaveUserData(users);
+
+        notifiText.text = "Account created successfully!";
+        GoToMainMenu(newUser); 
+    }
+
+    public void OnLogin()
+    {
+        string username = usernameInput.text.Trim();
+        string password = passwordInput.text.Trim();
+
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        {
+            notifiText.text = "Username and password cannot be empty!";
+            return;
+        }
+
+        List<UserData> users = LoadUserData();
+        UserData user = users.Find(u => u.UserNameDT == username);
+
+        if (user == null)
+        {
+            notifiText.text = "User not found!";
+        }
+        else if (EncryptionHelper.Decrypt(user.PasswordDT) == password)
+        {
+            notifiText.text = $"Welcome back, {user.UserNameDT}!";
+            GoToMainMenu(user); 
+        }
+        else
+        {
+            notifiText.text = "Incorrect password!";
+        }
+    }
+
+    public void SaveUserData(List<UserData> users)
+    {
+        try
+        {
+            string json = JsonUtility.ToJson(new UserDataList { Users = users }, true);
+            string encryptedJson = EncryptionHelper.Encrypt(json);
+            File.WriteAllText(filePath, encryptedJson);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("Error saving user data: " + ex.Message);
+        }
+    }
+
+    public List<UserData> LoadUserData()
+    {
+        if (!File.Exists(filePath))
+        {
+            return new List<UserData>();
+        }
+
+        try
+        {
+            string encryptedJson = File.ReadAllText(filePath);
+            string decryptedJson = EncryptionHelper.Decrypt(encryptedJson);
+
+            UserDataList userDataList = JsonUtility.FromJson<UserDataList>(decryptedJson);
+            return userDataList?.Users ?? new List<UserData>();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("Error loading user data: " + ex.Message);
+            return new List<UserData>();
+        }
+    }
+
+    private void GoToMainMenu(UserData user)
+    {
+        UserDataHolder.Instance.SetCurrentUser(user);
+        SceneManager.LoadScene("MainMenu");
+    }
+}
+
+[System.Serializable]
+public class UserDataList
+{
+    public List<UserData> Users;
+}

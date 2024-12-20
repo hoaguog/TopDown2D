@@ -1,0 +1,109 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Actuators;
+
+public class MyAgent : Agent
+{
+    public Transform target; 
+    public Transform obs; 
+    public float moveSpeed = 5f;
+    public float rayLength = 2f; 
+    public LayerMask obstacleLayer; 
+
+    private Rigidbody2D rBody;
+    private float minimumDistance = 1.5f;
+
+    public override void Initialize()
+    {
+        rBody = GetComponent<Rigidbody2D>();
+    }
+
+    public override void OnEpisodeBegin()
+    {
+        Vector3 position1, position2, position3;
+
+        position1 = new Vector3(Random.Range(-9f, +6f), Random.Range(-2f, 13f));
+
+        do
+        {
+            position2 = new Vector3(Random.Range(-6f, +3f), Random.Range(2f, 9f));
+        }
+        while (Vector3.Distance(position1, position2) < minimumDistance);
+
+        do
+        {
+            position3 = new Vector3(Random.Range(-6f, +3f), Random.Range(2f, 9f));
+        }
+        while (Vector3.Distance(position3, position1) < minimumDistance || Vector3.Distance(position3, position2) < minimumDistance);
+
+        transform.localPosition = position1;
+        target.localPosition = position2;
+        obs.localPosition = position3;
+    }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        sensor.AddObservation(transform.localPosition);
+
+        sensor.AddObservation(target.localPosition);
+
+        sensor.AddObservation((target.localPosition - transform.localPosition).normalized);
+
+        for (int i = 0; i < 4; i++) 
+        {
+            Vector3 direction = Quaternion.Euler(0, 0, i * 90f) * transform.right;
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, rayLength, obstacleLayer);
+            if (hit.collider != null)
+            {
+                sensor.AddObservation(hit.distance / rayLength);
+            }
+            else
+            {
+                sensor.AddObservation(1f); 
+            }
+        }
+    }
+
+    public override void OnActionReceived(ActionBuffers actions)
+    {
+        float moveX = actions.ContinuousActions[0]; 
+        float moveY = actions.ContinuousActions[1];
+
+        Vector3 move = new Vector3(moveX, moveY,0) * moveSpeed * Time.deltaTime;
+        transform.position += move;
+
+        float distanceToTarget = Vector2.Distance(transform.localPosition, target.localPosition);
+
+        if (distanceToTarget < 1.0f)
+        {
+            SetReward(+1.0f); 
+            EndEpisode();
+        }
+
+        RaycastHit2D wallHit = Physics2D.Raycast(transform.position, transform.right, rayLength, obstacleLayer);
+        if (wallHit.collider != null)
+        {
+            SetReward(-0.1f);
+        }
+
+        AddReward(-0.001f * distanceToTarget);
+    }
+
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        var continuousActionsOut = actionsOut.ContinuousActions;
+        continuousActionsOut[0] = Input.GetAxis("Horizontal"); 
+        continuousActionsOut[1] = Input.GetAxis("Vertical");   
+    }
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Side"))
+        {
+            SetReward(+1.0f);
+            EndEpisode();
+        }
+    }
+}

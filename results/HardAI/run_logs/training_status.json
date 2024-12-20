@@ -1,0 +1,38 @@
+{
+    "BigMap": {
+        "checkpoints": [
+            {
+                "steps": 499955,
+                "file_path": "./results\\HardAI\\BigMap\\BigMap-499955.onnx",
+                "reward": -34.894296050071716,
+                "creation_time": 1734548229.802372,
+                "auxillary_file_paths": [
+                    "./results\\HardAI\\BigMap\\BigMap-499955.pt"
+                ]
+            },
+            {
+                "steps": 500019,
+                "file_path": "./results\\HardAI\\BigMap\\BigMap-500019.onnx",
+                "reward": -34.894296050071716,
+                "creation_time": 1734548229.8829808,
+                "auxillary_file_paths": [
+                    "./results\\HardAI\\BigMap\\BigMap-500019.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 500019,
+            "file_path": "./results\\HardAI\\BigMap.onnx",
+            "reward": -34.894296050071716,
+            "creation_time": 1734548229.8829808,
+            "auxillary_file_paths": [
+                "./results\\HardAI\\BigMap\\BigMap-500019.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.2.2+cu121"
+    }
+}

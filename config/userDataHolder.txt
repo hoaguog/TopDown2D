@@ -1,0 +1,27 @@
+using System.Collections;
+using UnityEngine.SceneManagement;
+using UnityEngine;
+
+public class UserDataHolder : MonoBehaviour
+{
+    public static UserDataHolder Instance { get; private set; }
+    public UserData CurrentUser { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public void SetCurrentUser(UserData user)
+    {
+        CurrentUser = user;
+    }
+}

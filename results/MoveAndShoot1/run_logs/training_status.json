@@ -1,0 +1,38 @@
+{
+    "BigMap": {
+        "checkpoints": [
+            {
+                "steps": 499988,
+                "file_path": "./results\\MoveAndShoot1\\BigMap\\BigMap-499988.onnx",
+                "reward": -1.096188480203802,
+                "creation_time": 1734336735.8979032,
+                "auxillary_file_paths": [
+                    "./results\\MoveAndShoot1\\BigMap\\BigMap-499988.pt"
+                ]
+            },
+            {
+                "steps": 500040,
+                "file_path": "./results\\MoveAndShoot1\\BigMap\\BigMap-500040.onnx",
+                "reward": -1.080097239950429,
+                "creation_time": 1734336735.9797108,
+                "auxillary_file_paths": [
+                    "./results\\MoveAndShoot1\\BigMap\\BigMap-500040.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 500040,
+            "file_path": "./results\\MoveAndShoot1\\BigMap.onnx",
+            "reward": -1.080097239950429,
+            "creation_time": 1734336735.9797108,
+            "auxillary_file_paths": [
+                "./results\\MoveAndShoot1\\BigMap\\BigMap-500040.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.2.2+cu121"
+    }
+}

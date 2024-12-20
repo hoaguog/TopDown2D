@@ -1,0 +1,2 @@
+tensorboard --logdir=./results
+mlagents-learn config/TestAI.yaml --run-id=MoveToFlag2 --no-graphics --results-dir=./results
