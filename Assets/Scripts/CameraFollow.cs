@@ -71,57 +71,55 @@ public class CameraFolow : MonoBehaviour
     }
     public void UpdateLeaderboard()
     {
+
+        if (rowData.Length > 0)
         {
+            List<(string name, int killCount, int score)> leaderboardData = new List<(string, int, int)>();
 
-            if (rowData.Length > 0)
+            Player playerComponent = player.GetComponent<Player>();
+            if (playerComponent != null)
             {
-                GameObject playerRow = rowData[0];
-                TMP_Text txtName = playerRow.transform.Find("txtName").GetComponent<TMP_Text>();
-                TMP_Text txtKill = playerRow.transform.Find("txtKill").GetComponent<TMP_Text>();
-                TMP_Text txtScore = playerRow.transform.Find("txtScores").GetComponent<TMP_Text>();
+                leaderboardData.Add((player.name, playerComponent.killCount, playerComponent.score));
+            }
 
-                if (txtName != null) txtName.text = player.name;
-                if (txtKill != null) txtKill.text = player.GetComponent<Player>().killCount.ToString();
-                if (txtScore != null) txtScore.text = player.GetComponent<Player>().score.ToString();
-                if (player.GetComponent<Player>().score >= 50)
+            for (int i = 0; i < BOT.Length; i++)
+            {
+                BOTscoreboard botScoreboard = BOT[i].GetComponent<BOTscoreboard>();
+                if (botScoreboard != null)
                 {
-                    ShowWinPanel(player.name, player.GetComponent<Player>().killCount, player.GetComponent<Player>().score);
+                    leaderboardData.Add((BOT[i].name, botScoreboard.kill, botScoreboard.score));
+                }
+                else
+                {
+                    Debug.LogError("BOTscoreboard component not found on " + BOT[i].name);
+                }
+            }
+
+            leaderboardData.Sort((a, b) => b.score.CompareTo(a.score));
+
+            for (int i = 0; i < rowData.Length && i < leaderboardData.Count; i++)
+            {
+                GameObject row = rowData[i];
+                TMP_Text txtName = row.transform.Find("txtName").GetComponent<TMP_Text>();
+                TMP_Text txtKill = row.transform.Find("txtKill").GetComponent<TMP_Text>();
+                TMP_Text txtScore = row.transform.Find("txtScores").GetComponent<TMP_Text>();
+
+                var entry = leaderboardData[i];
+
+                if (txtName != null) txtName.text = entry.name;
+                if (txtKill != null) txtKill.text = entry.killCount.ToString();
+                if (txtScore != null) txtScore.text = entry.score.ToString();
+
+                if (entry.score >= 50)
+                {
+                    ShowWinPanel(entry.name, entry.killCount, entry.score);
                     return;
                 }
-
-                for (int i = 0; i < BOT.Length; i++)
-                {
-                    if (i + 1 < rowData.Length)
-                    {
-                        GameObject botRow = rowData[i + 1];
-                        txtName = botRow.transform.Find("txtName").GetComponent<TMP_Text>();
-                        txtKill = botRow.transform.Find("txtKill").GetComponent<TMP_Text>();
-                        txtScore = botRow.transform.Find("txtScores").GetComponent<TMP_Text>();
-
-                        BOTscoreboard botScoreboard = BOT[i].GetComponent<BOTscoreboard>();
-                        if (botScoreboard != null)
-                        {
-                            if (txtName != null) txtName.text = BOT[i].name;
-                            if (txtKill != null) txtKill.text = botScoreboard.kill.ToString();
-                            if (txtScore != null) txtScore.text = botScoreboard.score.ToString();
-                            //Debug.Log($"name {BOT[i].name}, kill = {botScoreboard.kill.ToString()}, score = {botScoreboard.score.ToString()} ");
-                            if (botScoreboard.score >= 50)
-                            {
-                                ShowWinPanel(BOT[i].name, botScoreboard.kill, botScoreboard.score);
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            Debug.LogError("BOTscoreboard component not found on " + BOT[i].name);
-                        }
-                    }
-                }
             }
-            else
-            {
-                Debug.LogError("No rowData.");
-            }
+        }
+        else
+        {
+            Debug.LogError("No rowData.");
         }
     }
     private void ShowWinPanel(string winnerName, int kills, int score)
