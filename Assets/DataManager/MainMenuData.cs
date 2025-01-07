@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 public class MainMenuData : MonoBehaviour
 
 {
-    [Header ("Main Menu")]
+    [Header("Main Menu")]
     [SerializeField]
     private TMP_Text txtUser;
     [SerializeField]
@@ -45,8 +45,24 @@ public class MainMenuData : MonoBehaviour
     [SerializeField]
     private Sprite[] mapSprite;
     [SerializeField]
-    private GameObject panel;
+    private GameObject PlayPanel;
     private UserData currentUser;
+
+    [Header("Tutorial panel")]
+    [SerializeField]
+    private Button btnKeyboard;
+    [SerializeField]
+    private Button btnRule;
+    [SerializeField]
+    private Button btnTutorialBackMain;
+    [SerializeField]
+    private Image imgTutorial;
+    [SerializeField]
+    private GameObject TutorialPanel;
+    [SerializeField]
+    private Sprite[] tutorialImg;
+    [SerializeField]
+    private GameObject txtRule;
     // Start is called before the first frame update
     void Start()
     {
@@ -68,7 +84,7 @@ public class MainMenuData : MonoBehaviour
         }
         //
         dropWeapon.onValueChanged.AddListener(delegate { ImageByDropdown(); });
-        dropMap.onValueChanged.AddListener (delegate { ImageByDropdown(); });
+        dropMap.onValueChanged.AddListener(delegate { ImageByDropdown(); });
         ImageByDropdown();
         CheckWeaponByLevel();
         CheckMapByLevel();
@@ -78,32 +94,55 @@ public class MainMenuData : MonoBehaviour
         //Main Menu Panel
         btnLogOut.onClick.AddListener(LogOut);
         btnQuit.onClick.AddListener(Application.Quit);
-        btnTutorial.onClick.AddListener(Tutorial);
+        btnTutorial.onClick.AddListener(TutorialButton);
         btnPlayGame.onClick.AddListener(PlayGameButton);
-
+        //tutorial
+        btnTutorialBackMain.onClick.AddListener(TutorialBackMain);
+        btnKeyboard.onClick.AddListener(ButtonKeyboard);
+        btnRule.onClick.AddListener(ButtonHowToPlay);
     }
 
+    private void ButtonKeyboard()
+    {
+        txtRule.SetActive(false);
+        imgTutorial.sprite = tutorialImg[0];
+    }
+    private void ButtonHowToPlay()
+    {
+        imgTutorial.sprite = tutorialImg[1];
+        txtRule.SetActive(true);
+    }
     private void BackToMain()
     {
-        if (panel.activeSelf == true)
+        if (PlayPanel.activeSelf == true)
         {
-            panel.SetActive(false);
+            PlayPanel.SetActive(false);
+        }
+    }
+    private void TutorialBackMain()
+    {
+        if (TutorialPanel.activeSelf == true)
+        {
+            TutorialPanel.SetActive(false);
         }
     }
     private void PlayMenuButton()
     {
-        if (panel.activeSelf == false)
+        if (PlayPanel.activeSelf == false)
         {
-            panel.SetActive(true);
+            PlayPanel.SetActive(true);
+        }
+    }
+    private void TutorialButton()
+    {
+        if (TutorialPanel.activeSelf == false)
+        {
+            TutorialPanel.SetActive(true);
         }
     }
     private void LogOut()
     {
         SceneManager.LoadScene("LoginMenu");
-    }
-    private void Tutorial()
-    {
-        SceneManager.LoadScene("Tutorial");
     }
     private void CheckWeaponByLevel()
     {
