@@ -2180,7 +2180,7 @@ MonoBehaviour:
   - {fileID: -7366585744700031638, guid: f27c0c52d4ed18a41b0319a56c44bcd1, type: 3}
   - {fileID: -4431764299673114164, guid: 3c266b932e8ffcf4a8d4000c0a0d7192, type: 3}
   - {fileID: 8223760342256937110, guid: 3c416ae4735afe64180494ec8e9e95a6, type: 3}
-  PlayPanel: {fileID: 0}
+  PlayPanel: {fileID: 1602277238}
   btnKeyboard: {fileID: 14749826}
   btnRule: {fileID: 20891254}
   btnTutorialBackMain: {fileID: 1607767493}

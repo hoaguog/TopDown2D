@@ -223,6 +223,8 @@ public class MainMenuData : MonoBehaviour
             case 1:
                 imgMap.sprite = mapSprite[1];
                 break;
+            case 2:
+                imgMap.sprite = mapSprite[2]; break;
             default:
                 imgMap.sprite = mapSprite[0];
                 break;
